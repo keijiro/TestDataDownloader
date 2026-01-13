@@ -8,23 +8,27 @@ namespace KlutterTools.Downloader {
 public sealed class FileEntry
 {
     [field:SerializeField] public string SourceUrl { get; private set; }
-    [field:SerializeField] public string Destination { get; private set; } = "StreamingAssets";
+    [field:SerializeField] public string Destination { get; private set; } = "Assets/StreamingAssets";
 
-    public string Filename
-      => Uri.TryCreate(SourceUrl, UriKind.Absolute, out var uri)
+    public string Filename { get; private set; }
+
+    public string DestinationPath => Path.Combine(Destination, Filename);
+    public string TemporaryPath => Path.Combine(Application.temporaryCachePath, Filename);
+
+    public void OnValidate()
+      => Filename = Uri.TryCreate(SourceUrl, UriKind.Absolute, out var uri)
            ? Path.GetFileName(uri.LocalPath) : null;
-
-    public string DestinationPath
-      => Path.Combine(Destination, Filename);
-
-    public string TemporaryPath
-      => Path.Combine(Application.temporaryCachePath, Filename);
 }
 
 [CreateAssetMenu(fileName = "Manifest", menuName = "Klutter Tools/Downloader/Manifest")]
 public sealed class Manifest : ScriptableObject
 {
     [field:SerializeField] public FileEntry[] FileEntries { get; private set; }
+
+    void OnValidate()
+    {
+        if (FileEntries != null) foreach (var entry in FileEntries) entry?.OnValidate();
+    }
 }
 
 } // namespace KlutterTools.Downloader
