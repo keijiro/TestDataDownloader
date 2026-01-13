@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -9,22 +8,19 @@ namespace TestDataDownloader {
 
 sealed class MissingFileListWindow : EditorWindow
 {
-    string[] _urls;
+    List<string> _urls;
 
     public static void ShowWindow(string[] urls)
     {
         var window = GetWindow<MissingFileListWindow>(true, "Missing Files");
         window.minSize = window.maxSize = new Vector2(400, 200);
-        window._urls = urls;
+        window._urls = new List<string>(urls);
     }
 
     void OnGUI()
     {
-        // Recheck missing files.
-        _urls = FileUtils.CheckMissingFiles(_urls);
-
         // Close immediately if there are no missing files.
-        if (_urls.Length == 0)
+        if (_urls.Count == 0)
         {
             Close();
             return;
@@ -43,7 +39,7 @@ sealed class MissingFileListWindow : EditorWindow
     readonly HashSet<string> _activeDownloads = new HashSet<string>();
 
     // Missing file list along with download buttons
-    void DrawFileList(string[] urls)
+    void DrawFileList(List<string> urls)
     {
         foreach (var url in urls)
         {
@@ -87,13 +83,14 @@ sealed class MissingFileListWindow : EditorWindow
         {
             File.Move(tempPath, destPath);
             AssetDatabase.Refresh();
+            _urls.Remove(url);
         }
         else
         {
             Debug.LogError($"Failed to download test data file: {url}");
-            _activeDownloads.Remove(url);
         }
 
+        _activeDownloads.Remove(url);
         Repaint();
     }
 }
