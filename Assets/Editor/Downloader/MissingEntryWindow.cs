@@ -51,7 +51,7 @@ sealed class MissingEntryWindow : EditorWindow
             EditorGUILayout.BeginHorizontal();
 
             // Filename label
-            EditorGUILayout.LabelField(FileUtils.UrlToFilename(entry.SourceUrl));
+            EditorGUILayout.LabelField(entry.Filename);
 
             // Download button
             EditorGUI.BeginDisabledGroup(isActive);
@@ -68,9 +68,8 @@ sealed class MissingEntryWindow : EditorWindow
         var url = entry.SourceUrl;
         if (!_activeDownloads.Add(url)) return;
 
-        var filename = FileUtils.UrlToFilename(url);
-        var destPath = FileUtils.GetDestinationPath(entry);
-        var tempPath = FileUtils.GetTemporaryPath(entry);
+        var destPath = entry.DestinationPath;
+        var tempPath = entry.TemporaryPath;
         var success = false;
 
         using (var request = UnityWebRequest.Get(url))
