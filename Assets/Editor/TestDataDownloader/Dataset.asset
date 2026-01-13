@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5acc6266be6eb4130afc5134ec35fcec, type: 3}
   m_Name: Dataset
   m_EditorClassIdentifier: Assembly-CSharp-Editor::TestDataDownloader.Dataset
-  <SourceUrls>k__BackingField:
-  - https://huggingface.co/keijiro-tk/test-videos/resolve/main/beeple_cleanroom_fhd_hap.mov
-  - https://huggingface.co/keijiro-tk/test-videos/resolve/main/beeple_fiber_optical_fhd_hap.mov
+  <FileEntries>k__BackingField:
+  - <SourceUrl>k__BackingField: https://commons.wikimedia.org/static/images/icons/commonswiki.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://commons.wikimedia.org/static/images/mobile/copyright/commonswiki-wordmark.svg
+    <Destination>k__BackingField: Assets/StreamingAssets

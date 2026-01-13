@@ -1,8 +1,8 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace TestDataDownloader {
-
+namespace KlutterTools.Downloader {
 [InitializeOnLoad]
 static class Launcher
 {
@@ -12,23 +12,23 @@ static class Launcher
     static void OnDelayedSetup()
     {
         // Check session state.
-        const string sessionKey = "TestDataDownloader.Shown";
+        const string sessionKey = "KlutterTools.Downloader.Shown";
         //if (SessionState.GetBool(sessionKey, false)) return;
         SessionState.SetBool(sessionKey, true);
 
         // Find dataset asset.
-        var guids = AssetDatabase.FindAssets("t:TestDataDownloader.Dataset");
+        var guids = AssetDatabase.FindAssets("t:KlutterTools.Downloader.Manifest");
         if (guids.Length == 0) return;
         var path = AssetDatabase.GUIDToAssetPath(guids[0]);
-        var dataset = AssetDatabase.LoadAssetAtPath<Dataset>(path);
+        var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(path);
 
         // Get missing file list.
-        var urls = FileUtils.CheckMissingFiles(dataset.SourceUrls);
-        if (urls.Length == 0) return;
+        var missing = manifest.FileEntries.CollectMissing();
+        if (!missing.Any()) return;
 
         // Open up missing file list window.
-        MissingFileListWindow.ShowWindow(urls);
+        MissingEntryWindow.ShowWindow(missing);
     }
 }
 
-} // namespace TestDataDownloader
+} // namespace KlutterTools.Downloader

@@ -1,26 +1,27 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace TestDataDownloader {
+namespace KlutterTools.Downloader {
 
-sealed class MissingFileListWindow : EditorWindow
+sealed class MissingEntryWindow : EditorWindow
 {
-    List<string> _urls;
+    List<FileEntry> _entries;
 
-    public static void ShowWindow(string[] urls)
+    public static void ShowWindow(IEnumerable<FileEntry> missing)
     {
-        var window = GetWindow<MissingFileListWindow>(true, "Missing Files");
+        var window = GetWindow<MissingEntryWindow>(true, "Missing Files");
         window.minSize = window.maxSize = new Vector2(400, 200);
-        window._urls = new List<string>(urls);
+        window._entries = missing.ToList();
     }
 
     void OnGUI()
     {
-        // Close immediately if there are no missing files.
-        if (_urls.Count == 0)
+        // Close immediately if there are no missing entry.
+        if (_entries.Count == 0)
         {
             Close();
             return;
@@ -30,31 +31,31 @@ sealed class MissingFileListWindow : EditorWindow
         EditorGUILayout.Space(12);
         EditorGUILayout.LabelField("Some test files are missing.");
 
-        // Missing file list
+        // Missing entry list
         EditorGUILayout.Space(8);
-        DrawFileList(_urls);
+        DrawEntryList();
     }
 
     // HashSet to track active downloads
     readonly HashSet<string> _activeDownloads = new HashSet<string>();
 
-    // Missing file list along with download buttons
-    void DrawFileList(List<string> urls)
+    // Missing entry list along with download buttons
+    void DrawEntryList()
     {
-        foreach (var url in urls)
+        foreach (var entry in _entries)
         {
-            var isActive = _activeDownloads.Contains(url);
+            var isActive = _activeDownloads.Contains(entry.SourceUrl);
             var buttonLabel = isActive ? "Downloading..." : "Download";
             var buttonWidth = GUILayout.Width(120);
 
             EditorGUILayout.BeginHorizontal();
 
             // Filename label
-            EditorGUILayout.LabelField(FileUtils.UrlToFilename(url));
+            EditorGUILayout.LabelField(FileUtils.UrlToFilename(entry.SourceUrl));
 
             // Download button
             EditorGUI.BeginDisabledGroup(isActive);
-            if (GUILayout.Button(buttonLabel, buttonWidth)) DownloadAsync(url);
+            if (GUILayout.Button(buttonLabel, buttonWidth)) DownloadAsync(entry);
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.EndHorizontal();
@@ -62,14 +63,14 @@ sealed class MissingFileListWindow : EditorWindow
     }
 
     // Asynchronous file download method
-    async void DownloadAsync(string url)
+    async void DownloadAsync(FileEntry entry)
     {
+        var url = entry.SourceUrl;
         if (!_activeDownloads.Add(url)) return;
 
         var filename = FileUtils.UrlToFilename(url);
-        var destPath = FileUtils.GetDestinationPath(filename);
-        var tempPath = FileUtils.GetTemporaryPath(filename);
-
+        var destPath = FileUtils.GetDestinationPath(entry);
+        var tempPath = FileUtils.GetTemporaryPath(entry);
         var success = false;
 
         using (var request = UnityWebRequest.Get(url))
@@ -83,7 +84,7 @@ sealed class MissingFileListWindow : EditorWindow
         {
             File.Move(tempPath, destPath);
             AssetDatabase.Refresh();
-            _urls.Remove(url);
+            _entries.Remove(entry);
         }
         else
         {
@@ -95,4 +96,4 @@ sealed class MissingFileListWindow : EditorWindow
     }
 }
 
-} // namespace TestDataDownloader
+} // namespace KlutterTools.Downloader
