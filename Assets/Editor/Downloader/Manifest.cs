@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using Unity.Properties;
 
 namespace KlutterTools.Downloader {
 
@@ -10,7 +11,7 @@ public sealed class FileEntry
     [field:SerializeField] public string SourceUrl { get; private set; }
     [field:SerializeField] public string Destination { get; private set; } = "Assets/StreamingAssets";
 
-    public string Filename { get; private set; }
+    [CreateProperty] public string Filename { get; private set; }
 
     public string DestinationPath => Path.Combine(Destination, Filename);
     public string TemporaryPath => Path.Combine(Application.temporaryCachePath, Filename);

@@ -4,20 +4,32 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UIElements;
 
 namespace KlutterTools.Downloader {
 
 sealed class MissingEntryWindow : EditorWindow
 {
-    List<FileEntry> _entries;
+    static readonly string UxmlPath = "Assets/Editor/Downloader/MissingEntryWindow.uxml";
 
-    public static void ShowWindow(IEnumerable<FileEntry> missing)
+    public static void ShowWindow()
     {
         var window = GetWindow<MissingEntryWindow>(true, "Missing Files");
-        window.minSize = window.maxSize = new Vector2(400, 200);
-        window._entries = missing.ToList();
+        window.minSize = new Vector2(400, 200);
     }
 
+    public void CreateGUI()
+    {
+        var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
+        var doc = uxml.CloneTree();
+
+        var list = doc.Q<ListView>("entry-list");
+        list.itemsSource = Launcher.GlobalManifest.FileEntries;
+
+        rootVisualElement.Add(doc);
+    }
+
+    /*
     void OnGUI()
     {
         // Close immediately if there are no missing entry.
@@ -93,6 +105,7 @@ sealed class MissingEntryWindow : EditorWindow
         _activeDownloads.Remove(url);
         Repaint();
     }
+    */
 }
 
 } // namespace KlutterTools.Downloader

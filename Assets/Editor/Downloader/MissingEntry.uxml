@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="file-entry" data-source-type="KlutterTools.Downloader.FileEntry, Assembly-CSharp-Editor" style="flex-direction: row; justify-content: space-between;">
+        <ui:Label text="TestFile.dat" name="filename-label">
+            <Bindings>
+                <ui:DataBinding property="text" data-source-path="Filename" binding-mode="ToTarget"/>
+            </Bindings>
+        </ui:Label>
+        <ui:Button text="Download" name="download-button"/>
+    </ui:VisualElement>
+</ui:UXML>
