@@ -5,7 +5,7 @@
                 <ui:DataBinding property="text" data-source-path="Filename" binding-mode="ToTarget"/>
             </Bindings>
         </ui:Label>
-        <ui:Label name="state-label" text="Missing">
+        <ui:Label name="state-label" text="Missing" style="color: rgb(147, 147, 147); -unity-font-style: italic;">
             <Bindings>
                 <ui:DataBinding property="text" data-source-path="CurrentState" binding-mode="ToTarget"/>
             </Bindings>

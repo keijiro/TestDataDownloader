@@ -23,7 +23,7 @@ sealed class MissingEntryWindow : EditorWindow
         var doc = uxml.CloneTree();
 
         var list = doc.Q<ListView>("entry-list");
-        var entries = Launcher.GlobalManifest.FileEntries;
+        var entries = GlobalManifest.Instance.FileEntries;
         list.itemsSource = entries;
         list.bindItem = (element, i) =>
         {
@@ -32,9 +32,10 @@ sealed class MissingEntryWindow : EditorWindow
             if (button.userData is System.Action prev)
                 button.clicked -= prev;
 
+            button.enabledSelf = entry.CurrentState == FileState.Missing;
+
             System.Action handler = async () =>
             {
-                Debug.Log($"Download clicked: {entry.Filename}");
                 button.enabledSelf = false;
                 if (await entry.DownloadAsync()) AssetDatabase.Refresh();
                 Repaint();

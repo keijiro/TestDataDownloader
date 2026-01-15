@@ -1,16 +1,16 @@
 using System;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
+using Unity.Properties;
 using UnityEngine;
 using UnityEngine.Networking;
-using Unity.Properties;
 
 namespace KlutterTools.Downloader {
 
 [Serializable]
 public sealed class FileEntry
 {
-    public enum State { Missing, Downloading, Downloaded }
+    //// Editable attributes
 
     [field:SerializeField]
     public string SourceUrl { get; private set; }
@@ -18,11 +18,15 @@ public sealed class FileEntry
     [field:SerializeField]
     public string Destination { get; private set; } = "Assets/StreamingAssets";
 
+    //// Exposed UI properties
+
     [CreateProperty]
     public string Filename { get; private set; }
 
     [CreateProperty]
-    public State CurrentState { get; private set; }
+    public FileState CurrentState { get; private set; }
+
+    //// Dynamic properties
 
     public string DestinationPath
       => Path.Combine(Destination, Filename);
@@ -30,33 +34,44 @@ public sealed class FileEntry
     public string TemporaryPath
       => Path.Combine(Application.temporaryCachePath, Filename);
 
+    //// Public methods
+
+    // Validation method
     public void OnValidate()
-      => Filename = Uri.TryCreate(SourceUrl, UriKind.Absolute, out var uri)
-           ? Path.GetFileName(uri.LocalPath) : null;
+    {
+        if (Uri.TryCreate(SourceUrl, UriKind.Absolute, out var uri))
+        {
+            Filename = Path.GetFileName(uri.LocalPath);
+            CurrentState = File.Exists(DestinationPath)
+              ? FileState.Downloaded : FileState.Missing;
+        }
+        else
+        {
+            Filename = null;
+            CurrentState = FileState.Missing;
+        }
+    }
 
     // Asynchronous file download method
     public async Task<bool> DownloadAsync()
     {
-        var url = SourceUrl;
         var destPath = DestinationPath;
         var tempPath = TemporaryPath;
         var success = false;
 
-        using (var request = UnityWebRequest.Get(url))
+        using (var request = UnityWebRequest.Get(SourceUrl))
         {
+            CurrentState = FileState.Downloading;
             request.downloadHandler = new DownloadHandlerFile(tempPath);
             await Awaitable.FromAsyncOperation(request.SendWebRequest());
             success = (request.result == UnityWebRequest.Result.Success);
+            CurrentState = success ? FileState.Downloaded : FileState.Missing;
         }
 
         if (success)
-        {
             File.Move(tempPath, destPath);
-        }
         else
-        {
-            Debug.LogError($"Failed to download test data file: {url}");
-        }
+            Debug.LogError($"Failed to download test data file: {Filename}");
 
         return success;
     }
