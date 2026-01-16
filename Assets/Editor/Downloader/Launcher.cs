@@ -7,13 +7,13 @@ static class Launcher
 {
     static Launcher()
     {
-        // Manifest existence check
-        if (GlobalManifest.Instance == null) return;
-
         // Session state check
         const string sessionKey = "KlutterTools.Downloader.Shown";
-        //if (SessionState.GetBool(sessionKey, false)) return;
+        if (SessionState.GetBool(sessionKey, false)) return;
         SessionState.SetBool(sessionKey, true);
+
+        // Manifest existence check
+        if (GlobalManifest.Instance == null) return;
 
         // All files downloaded check
         if (GlobalManifest.Instance.CheckAllDownloaded()) return;
