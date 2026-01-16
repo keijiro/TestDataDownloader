@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -15,37 +12,42 @@ sealed class MissingEntryWindow : EditorWindow
     {
         var window = GetWindow<MissingEntryWindow>(true, "Missing Files");
         window.minSize = new Vector2(400, 200);
+        window.Show();
     }
 
     public void CreateGUI()
     {
+        // New UI document from UXML
         var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
         var doc = uxml.CloneTree();
 
+        // List view setup
         var list = doc.Q<ListView>("entry-list");
-        var entries = GlobalManifest.Instance.FileEntries;
-        list.itemsSource = entries;
-        list.bindItem = (element, i) =>
-        {
-            var entry = entries[i];
-            var button = element.Q<Button>("download-button");
-            if (button.userData is System.Action prev)
-                button.clicked -= prev;
-
-            button.enabledSelf = entry.CurrentState == FileState.Missing;
-
-            System.Action handler = async () =>
-            {
-                button.enabledSelf = false;
-                if (await entry.DownloadAsync()) AssetDatabase.Refresh();
-                Repaint();
-            };
-
-            button.userData = handler;
-            button.clicked += handler;
-        };
+        list.bindItem = BindItem;
+        list.itemsSource = GlobalManifest.Instance.FileEntries;
 
         rootVisualElement.Add(doc);
+    }
+
+    // List view item binding
+    void BindItem(VisualElement element, int index)
+    {
+        var button = element.Q<Button>("download-button");
+        var entry = GlobalManifest.Instance.FileEntries[index];
+
+        // Enable button only for missing files.
+        button.enabledSelf = (entry.CurrentState == FileState.Missing);
+
+        // Download button handler
+        button.clicked += async () =>
+        {
+            button.enabledSelf = false;
+            if (await entry.DownloadAsync())
+                AssetDatabase.Refresh();
+            else
+                button.enabledSelf = true;
+            Repaint();
+        };
     }
 }
 
