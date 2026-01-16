@@ -17,3 +17,23 @@ MonoBehaviour:
     <Destination>k__BackingField: Assets/StreamingAssets
   - <SourceUrl>k__BackingField: https://commons.wikimedia.org/static/images/mobile/copyright/commonswiki-wordmark.svg
     <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist1.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist2.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist3.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist4.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist5.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist6.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist7.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist8.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist9.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
+  - <SourceUrl>k__BackingField: https://example.com/donotexist10.svg
+    <Destination>k__BackingField: Assets/StreamingAssets
