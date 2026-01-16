@@ -1,11 +1,10 @@
-using System.Linq;
 using UnityEditor;
 
 namespace KlutterTools.Downloader {
 
 public static class GlobalManifest
 {
-    public static Manifest Instance { get; set; }
+    public static Manifest Instance { get; private set; }
 
     static GlobalManifest()
     {

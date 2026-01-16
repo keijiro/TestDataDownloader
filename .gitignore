@@ -21,3 +21,6 @@ Desktop.ini
 
 /Assets/StreamingAssets/*.mov
 /Assets/StreamingAssets/*.mov.meta
+
+/Assets/StreamingAssets/*.svg
+/Assets/StreamingAssets/*.svg.meta
